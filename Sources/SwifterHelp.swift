@@ -62,10 +62,7 @@ public extension Swifter {
      */
     func getHelpPrivacy(success: SuccessHandler? = nil,
                         failure: FailureHandler? = nil) {
-        let path = "help/privacy.json"
-        self.getJSON(path: path, baseURL: .api, parameters: [:], success: { json, _ in
-            success?(json["privacy"])
-        }, failure: failure)
+        assertionFailure("getHelpPrivacy Not Supported")
     }
     
     /**
@@ -75,10 +72,7 @@ public extension Swifter {
      */
     func getHelpTermsOfService(success: SuccessHandler? = nil,
                                failure: FailureHandler? = nil) {
-        let path = "help/tos.json"
-        self.getJSON(path: path, baseURL: .api, parameters: [:], success: { json, _ in
-            success?(json["tos"])
-        }, failure: failure)
+        assertionFailure("getHelpPrivacy Not Supported")
     }
     
     /**

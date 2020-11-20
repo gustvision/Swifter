@@ -203,48 +203,6 @@ public extension Swifter {
     }
 
     /**
-    GET    blocks/list
-
-    Returns a collection of user objects that the authenticating user is blocking.
-    */
-    func getBlockedUsers(includeEntities: Bool? = nil,
-                         skipStatus: Bool? = nil,
-                         cursor: String? = nil,
-                         success: CursorSuccessHandler? = nil,
-                         failure: FailureHandler? = nil) {
-        let path = "blocks/list.json"
-
-        var parameters = [String: Any]()
-        parameters["include_entities"] ??= includeEntities
-        parameters["skip_status"] ??= skipStatus
-        parameters["cursor"] ??= cursor
-
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["users"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-            }, failure: failure)
-    }
-
-    /**
-    GET    blocks/ids
-
-    Returns an array of numeric user ids the authenticating user is blocking.
-    */
-    func getBlockedUsersIDs(stringifyIDs: String? = nil,
-                            cursor: String? = nil,
-                            success: CursorSuccessHandler? = nil,
-                            failure: FailureHandler? = nil) {
-        let path = "blocks/ids.json"
-
-        var parameters = [String: Any]()
-        parameters["stringify_ids"] ??= stringifyIDs
-        parameters["cursor"] ??= cursor
-
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["ids"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-            }, failure: failure)
-    }
-
-    /**
     POST	blocks/create
 
     Blocks the specified user from following the authenticating user. In addition the blocked user will not show in the authenticating users mentions or timeline (unless retweeted by another user). If a follow or friend relationship exists it is destroyed.
@@ -472,44 +430,4 @@ public extension Swifter {
             }, failure: failure)
     }
 
-    /**
-    GET    mutes/users/ids
-
-    Returns an array of numeric user ids the authenticating user has muted.
-    */
-    func getMuteUsersIDs(cursor: String? = nil,
-                         success: CursorSuccessHandler? = nil,
-                         failure: FailureHandler? = nil) {
-        let path = "mutes/users/ids.json"
-
-        var parameters = [String: Any]()
-        parameters["cursor"] ??= cursor
-
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["ids"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-            }, failure: failure)
-    }
-    
-    /**
-    GET    mutes/users/list
-    
-    Returns an array of user objects the authenticating user has muted.
-    */
-    func getMutedUsers(cursor: String? = nil,
-                       includeEntities: Bool? = nil,
-                       skipStatus: Bool? = nil,
-                       success: CursorSuccessHandler? = nil,
-                       failure: FailureHandler? = nil) {
-        let path = "mutes/users/list.json"
-        
-        var parameters = [String: Any]()
-        parameters["include_entities"] ??= includeEntities
-        parameters["skip_status"] ??= skipStatus
-        parameters["cursor"] ??= cursor
-        
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["users"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-            }, failure: failure)
-    }
-    
 }

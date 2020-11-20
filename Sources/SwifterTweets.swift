@@ -215,25 +215,7 @@ public extension Swifter {
     }
 	
 	func postTweetWithGif(attachmentUrl: URL, text: String, success: SuccessHandler? = nil, failure: FailureHandler? = nil) {
-		guard let data = try? Data(contentsOf: attachmentUrl) else {
-			let error = SwifterError(message: "Found invalid GIF Data", kind: .invalidGifData)
-			failure?(error)
-			return
-		}
-
-        self.prepareUpload(data: data, type: .gif, category: .gif, success: { json, response in
-            if let media_id = json["media_id_string"].string {
-                self.appendUpload(media_id, data: data, name: attachmentUrl.lastPathComponent, index: 0, success: { json, response in
-                    self.finalizeUpload(mediaId: media_id, success: { json, resoponse in
-                        self.postTweet(status: text, mediaIDs: [media_id], success: success, failure: failure)
-                    }, failure: failure)
-                }, failure: failure)
-            }
-            else {
-                let error = SwifterError(message: "Bad Response for GIF Upload", kind: .invalidGifResponse)
-                failure?(error)
-            }
-        }, failure: failure)
+        assertionFailure("postTweetWithGif Not Supported")
 	}
 
     /**
@@ -267,20 +249,7 @@ public extension Swifter {
                             category: MediaCategory,
                             success: SuccessHandler? = nil,
                             failure: FailureHandler? = nil) {
-        self.prepareUpload(data: media, type: type, category: category, success: { json, response in
-            if let media_id = json["media_id_string"].string {
-                self.appendUpload(media_id, data: media, name: name, index: 0, success: { json, response in
-                    self.finalizeUpload(mediaId: media_id, success: { (json, _) in
-                        success?(json)
-                    }, failure: failure)
-                }, failure: failure)
-            }
-            else {
-                let error = SwifterError(message: "Bad Response for Multipart Media Upload",
-                                         kind: .invalidMultipartMediaResponse)
-                failure?(error)
-            }
-        }, failure: failure)
+        assertionFailure("postMultipartMedia Not Supported")
     }
 
     /**
@@ -383,17 +352,7 @@ public extension Swifter {
                          stringifyIDs: Bool? = nil,
                          success: CursorSuccessHandler? = nil,
                          failure: FailureHandler? = nil) {
-        let path = "statuses/retweeters/ids.json"
-
-        var parameters = [String: Any]()
-        parameters["id"] = id
-		parameters["count"] = count
-        parameters["cursor"] ??= cursor
-        parameters["stringify_ids"] ??= stringifyIDs
-
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["ids"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-            }, failure: failure)
+        assertionFailure("tweetRetweeters Not Supported")
     }
 
     /**

@@ -86,10 +86,10 @@ public class Swifter {
     
     // MARK: - Types
     
-    public typealias SuccessHandler = (JSON) -> Void
-    public typealias CursorSuccessHandler = (JSON, _ previousCursor: String?, _ nextCursor: String?) -> Void
-    public typealias JSONSuccessHandler = (JSON, _ response: HTTPURLResponse) -> Void
-    public typealias SearchResultHandler = (JSON, _ searchMetadata: JSON) -> Void
+    public typealias SuccessHandler = (Data) -> Void
+    public typealias CursorSuccessHandler = (Data, _ previousCursor: String?, _ nextCursor: String?) -> Void
+    public typealias DataSuccessHandler = (Data, _ response: HTTPURLResponse) -> Void
+    public typealias SearchResultHandler = (Data, _ searchMetadata: JSON) -> Void
     public typealias FailureHandler = (_ error: Error) -> Void
     
     
@@ -147,8 +147,8 @@ public class Swifter {
                               method: HTTPMethodType,
                               parameters: [String: Any],
                               uploadProgress: HTTPRequest.UploadProgressHandler? = nil,
-                              downloadProgress: JSONSuccessHandler? = nil,
-                              success: JSONSuccessHandler? = nil,
+                              downloadProgress: DataSuccessHandler? = nil,
+                              success: DataSuccessHandler? = nil,
                               failure: HTTPRequest.FailureHandler? = nil) -> HTTPRequest {
         
         let jsonDownloadProgressHandler: HTTPRequest.DownloadProgressHandler = { [weak self] data, _, _, response in
@@ -159,19 +159,8 @@ public class Swifter {
         
         let jsonSuccessHandler: HTTPRequest.SuccessHandler = { data, response in
             DispatchQueue.global(qos: .utility).async {
-                do {
-                    let jsonResult = try JSON.parse(jsonData: data)
-                    DispatchQueue.main.async {
-                        success?(jsonResult, response)
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        if case 200...299 = response.statusCode, data.isEmpty {
-                            success?(JSON("{}"), response)
-                        } else {
-                            failure?(error)
-                        }
-                    }
+                DispatchQueue.main.async {
+                    success?(data, response)
                 }
             }
         }
@@ -193,7 +182,7 @@ public class Swifter {
         }
     }
     
-    private func handleStreamProgress(data: Data, response: HTTPURLResponse, handler: JSONSuccessHandler? = nil) {
+    private func handleStreamProgress(data: Data, response: HTTPURLResponse, handler: DataSuccessHandler? = nil) {
         let chunkSeparator = "\r\n"
         if var jsonString = String(data: data, encoding: .utf8) {
             if let remaining = chunkBuffer {
@@ -202,12 +191,8 @@ public class Swifter {
             let jsonChunks = jsonString.components(separatedBy: chunkSeparator)
             for chunk in jsonChunks where !chunk.utf16.isEmpty {
                 if let chunkData = chunk.data(using: .utf8) {
-                    guard let jsonResult = try? JSON.parse(jsonData: chunkData) else {
-                        self.chunkBuffer = chunk
-                        return
-                    }
                     chunkBuffer = nil
-                    handler?(jsonResult, response)
+                    handler?(chunkData, response)
                 }
             }
         }
@@ -218,8 +203,8 @@ public class Swifter {
                           baseURL: TwitterURL,
                           parameters: [String: Any],
                           uploadProgress: HTTPRequest.UploadProgressHandler? = nil,
-                          downloadProgress: JSONSuccessHandler? = nil,
-                          success: JSONSuccessHandler?,
+                          downloadProgress: DataSuccessHandler? = nil,
+                          success: DataSuccessHandler?,
                           failure: HTTPRequest.FailureHandler?) -> HTTPRequest {
         return self.jsonRequest(path: path, baseURL: baseURL, method: .GET, parameters: parameters,
                                 uploadProgress: uploadProgress, downloadProgress: downloadProgress,
@@ -231,8 +216,8 @@ public class Swifter {
                            baseURL: TwitterURL,
                            parameters: [String: Any],
                            uploadProgress: HTTPRequest.UploadProgressHandler? = nil,
-                           downloadProgress: JSONSuccessHandler? = nil,
-                           success: JSONSuccessHandler?,
+                           downloadProgress: DataSuccessHandler? = nil,
+                           success: DataSuccessHandler?,
                            failure: HTTPRequest.FailureHandler?) -> HTTPRequest {
         return self.jsonRequest(path: path, baseURL: baseURL, method: .POST, parameters: parameters,
                                 uploadProgress: uploadProgress, downloadProgress: downloadProgress,
@@ -243,7 +228,7 @@ public class Swifter {
     internal func deleteJSON(path: String,
                              baseURL: TwitterURL,
                              parameters: [String: Any],
-                             success: JSONSuccessHandler?,
+                             success: DataSuccessHandler?,
                              failure: HTTPRequest.FailureHandler?) -> HTTPRequest {
         return self.jsonRequest(path: path, baseURL: baseURL, method: .DELETE, parameters: parameters,
                                 success: success, failure: failure)

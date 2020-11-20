@@ -51,25 +51,7 @@ public extension Swifter {
                      tweetMode: TweetMode = TweetMode.default,
                      success: SearchResultHandler? = nil,
                      failure: @escaping FailureHandler) {
-        let path = "search/tweets.json"
-
-        var parameters = [String: Any]()
-        parameters["q"] = query
-        parameters["geocode"] ??= geocode
-        parameters["lang"] ??= lang
-        parameters["locale"] ??= locale
-        parameters["result_type"] ??= resultType
-        parameters["count"] ??= count
-        parameters["until"] ??= until
-        parameters["since_id"] ??= sinceID
-        parameters["max_id"] ??= maxID
-        parameters["include_entities"] ??= includeEntities
-        parameters["callback"] ??= callback
-        parameters["tweet_mode"] ??= tweetMode.stringValue
-
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["statuses"], json["search_metadata"])
-            }, failure: failure)
+        assertionFailure("searchTweet Not Supported")
     }
     
 }

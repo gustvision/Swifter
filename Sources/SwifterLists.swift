@@ -108,58 +108,7 @@ public extension Swifter {
             success?(json)
         }, failure: failure)
     }
-    
-    /**
-     GET    lists/memberships
-     
-     Returns the lists the specified user has been added to. If user_id or screen_name are not provided the memberships for the authenticating user are returned.
-     */
-    func getListMemberships(for userTag: UserTag,
-                            count: Int? = nil,
-                            cursor: String? = nil,
-                            filterToOwnedLists: Bool? = nil,
-                            success: CursorSuccessHandler? = nil,
-                            failure: FailureHandler? = nil) {
-        let path = "lists/memberships.json"
-        
-        var parameters = [String: Any]()
-        parameters[userTag.key] = userTag.value
-        parameters["count"] ??= count
-        parameters["cursor"] ??= cursor
-        parameters["filter_to_owned_lists"] ??= filterToOwnedLists
-        
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["lists"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-        }, failure: failure)
-    }
-    
-    /**
-     GET	lists/subscribers
-     
-     Returns the subscribers of the specified list. Private list subscribers will only be shown if the authenticated user owns the specified list.
-     */
-    func getListSubscribers(for listTag: ListTag,
-                            cursor: String? = nil,
-                            includeEntities: Bool? = nil,
-                            skipStatus: Bool? = nil,
-                            success: CursorSuccessHandler? = nil,
-                            failure: FailureHandler? = nil) {
-        let path = "lists/subscribers.json"
-        
-        var parameters = [String: Any]()
-        parameters[listTag.key] = listTag.value
-        if case .slug(_, let owner) = listTag {
-            parameters[owner.ownerKey] = owner.value
-        }
-        parameters["cursor"] ??= cursor
-        parameters["include_entities"] ??= includeEntities
-        parameters["skip_status"] ??= skipStatus
-        
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in            
-            success?(json["users"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-        }, failure: failure)
-    }
-    
+
     /**
      POST	lists/subscribers/create
      
@@ -284,35 +233,7 @@ public extension Swifter {
             success?(json)
         }, failure: failure)
     }
-    
-    /**
-     GET    lists/members
-     
-     Returns the members of the specified list. Private list members will only be shown if the authenticated user owns the specified list.
-     */
-    
-    func getListMembers(for listTag: ListTag,
-                        cursor: String? = nil,
-                        includeEntities: Bool? = nil,
-                        skipStatus: Bool? = nil,
-                        success: CursorSuccessHandler? = nil,
-                        failure: FailureHandler? = nil) {
-        let path = "lists/members.json"
-        
-        var parameters = [String: Any]()
-        parameters[listTag.key] = listTag.value
-        if case .slug(_, let owner) = listTag {
-            parameters[owner.ownerKey] = owner.value
-        }
-        parameters["cursor"] ??= cursor
-        parameters["include_entities"] ??= includeEntities
-        parameters["skip_status"] ??= skipStatus
-        
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["users"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-        }, failure: failure)
-    }
-    
+
     /**
      POST	lists/members/create
      
@@ -422,29 +343,7 @@ public extension Swifter {
             success?(json)
         }, failure: failure)
     }
-    
-    /**
-     GET	lists/subscriptions
-     
-     Obtain a collection of the lists the specified user is subscribed to, 20 lists per page by default. Does not include the user's own lists.
-     */
-    func getSubscribedList(of userTag: UserTag,
-                           count: String? = nil,
-                           cursor: String? = nil,
-                           success: CursorSuccessHandler? = nil,
-                           failure: FailureHandler? = nil) {
-        let path = "lists/subscriptions.json"
-        
-        var parameters = [String: Any]()
-        parameters[userTag.key] = userTag.value
-        parameters["count"] ??= count
-        parameters["cursor"] ??= cursor
-        
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
-            success?(json["lists"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-        }, failure: failure)
-    }
-    
+
     /**
      POST	lists/members/destroy_all
      
@@ -468,29 +367,6 @@ public extension Swifter {
         self.postJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in
             success?(json)
         }, failure: failure)
-    }
-    
-    /**
-     GET    lists/ownerships
-     
-     Returns the lists owned by the specified Twitter user. Private lists will only be shown if the authenticated user is also the owner of the lists.
-     */
-    func getOwnedLists(for userTag: UserTag,
-                       count: String? = nil,
-                       cursor: String? = nil,
-                       success: CursorSuccessHandler? = nil,
-                       failure: FailureHandler? = nil) {
-        let path = "lists/ownerships.json"
-        
-        var parameters = [String: Any]()
-        parameters[userTag.key] = userTag.value
-        parameters["count"] ??= count
-        parameters["cursor"] ??= cursor
-        
-        self.getJSON(path: path, baseURL: .api, parameters: parameters, success: { json, _ in            
-            success?(json["lists"], json["previous_cursor_str"].string, json["next_cursor_str"].string)
-        }, failure: failure)
-        
     }
     
 }
